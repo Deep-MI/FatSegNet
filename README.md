@@ -228,4 +228,4 @@ For any questions and feedback, feel free to contact santiago.estrada(at).dzne.d
 
 --------
 
-<img align="right" height="120" src="Images/RZ_UK_Logo_Rheinland Studie_sw.png">
+
