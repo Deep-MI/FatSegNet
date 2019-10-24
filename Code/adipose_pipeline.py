@@ -22,13 +22,13 @@ import os
 
 import nibabel as nib
 import pandas as pd
-from Code.utilities.misc import locate_file, locate_dir
+from Code.utilities.misc import locate_file
 from Code.utilities.visualization_misc import multiview_plotting
-from Code.utilities.metrics import  perimeter_calculation,calculate_areas,calculate_volumes,calculate_statistics_v2
+from Code.utilities.metrics import calculate_statistics_v2
 from Code.utilities.models import run_adipose_localization,run_adipose_segmentation
 import numpy as np
 from keras import backend as K
-from Code.utilities.image_processing import change_data_plane,swap_axes,largets_connected_componets,find_labels
+from Code.utilities.image_processing import largets_connected_componets,find_labels
 from Code.utilities.conform import conform
 
 
@@ -164,7 +164,8 @@ def check_flags(predicted_array,water_array,fat_array,ratio_vat_sat,threshold=0.
 def run_adipose_pipeline(args,flags,save_path='/',data_path='/',id='Test'):
 
     output_stats = 'AAT_stats.tsv'
-    output_pred = 'AAT_pred.nii.gz'
+    output_pred_fat = 'AAT_pred.nii.gz'
+    output_pred = 'ALL_pred.nii.gz'
     qc_images = []
 
 
@@ -306,7 +307,7 @@ def run_adipose_pipeline(args,flags,save_path='/',data_path='/',id='Test'):
         disp_pred = np.fliplr(disp_pred)
 
         #only display SAT and VAT
-        #disp_pred[disp_pred>=3]=0
+        disp_pred[disp_pred>=3]=0
 
         idx = (np.where(disp_pred > 0))
         low_idx = np.min(idx[0])
@@ -328,6 +329,10 @@ def run_adipose_pipeline(args,flags,save_path='/',data_path='/',id='Test'):
         pred_array=np.swapaxes(pred_array,2,0)
         pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
         nib.save(pred_img, seg_path+'/'+output_pred)
+
+        pred_array[pred_array>3]=0
+        pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
+        nib.save(pred_img, seg_path+'/'+output_pred_fat)
 
     else:
         print('')

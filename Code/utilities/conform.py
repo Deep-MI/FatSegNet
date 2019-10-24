@@ -1,3 +1,21 @@
+
+# Copyright 2019 Population Health Sciences and Image Analysis, German Center for Neurodegenerative Diseases(DZNE)
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
+
+
+
 import numpy as np
 import nibabel as nib
 import sys
@@ -161,19 +179,3 @@ def conform(img,flags,order,save_path,mod,axial=False):
         nib.save(new_img, new_img_path)
 
     return new_img
-
-# FLAGS = {}
-# FLAGS['multiviewModel'] = '/tool/Adipose_Seg_Models/Segmentation/'
-# FLAGS['singleViewModels'] = '/tool/Adipose_Seg_Models/Segmentation/'
-# FLAGS['localizationModels'] = '/tool/Adipose_Seg_Models/Localization/'
-# FLAGS['input_path']='/tool/Data'
-# FLAGS['output_path']='/tool/Output'
-# FLAGS['imgSize'] = [256, 224, 72]
-# FLAGS['spacing'] = [1.9531, 1.9531, 5.0]
-# FLAGS['base_ornt'] = np.array([[0, -1], [1, 1], [2, 1]])
-#
-# path='/home/estradae/Downloads/100006/100006_3D_GRE_TRA_F/3D_GRE_TRA_F_3D_GRE_TRA_2.nii.gz'
-# #path='/home/estradae/Downloads/Rotterdam/1/ab_fat.nii.gz'
-# #path='/localmount/volume1/users/estradae/Fatimaging/scans/0e499732-aed3-4623-b976-97685cae0c59/FatImaging_F.nii.gz'
-# img=nib.load(path)
-# new_img=conform(img,FLAGS,order=3,save_path='/home/estradae/Downloads',mod='fat',axial=True)
