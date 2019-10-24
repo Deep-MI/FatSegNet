@@ -282,7 +282,7 @@ def run_adipose_pipeline(args,flags,save_path='/',data_path='/',id='Test'):
                                                                       args.compartments, weighted=weighted)
 
 
-        pixel_matrix[row_px:row_px + 1, 1] = pixel_matrix[row_px:row_px + 1, 3] / (img_spacing[2] * 0.1)
+        pixel_matrix[row_px:row_px + 1, 1] = int(pixel_matrix[row_px:row_px + 1, 3] / (img_spacing[2] * 0.1))
         pixel_matrix[row_px:row_px + 1, 2] = check_flags(pred_array[low_idx:high_idx, :, :],water_array=water_array,fat_array=fat_array,
                                                          ratio_vat_sat=pixel_matrix[row_px, ratio_position],
                                                          threshold=args.increase_threshold,sat_to_vat_threshold=args.sat_to_vat_threshold)
