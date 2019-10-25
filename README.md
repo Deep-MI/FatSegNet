@@ -54,28 +54,8 @@ adipose_tool      cpu_v1    xxxxxxxx      xxxxxx      xxxx
 
 ### **Input Data format**
 For running the tool the input data is expected to be a nifti volume with size of [256,224,72], if the scans have a different size they will be crop or padd to the correct size. Additionally 
-the scans have to be arrange as follows :
+the scans have to be arrange as follows(or see [example_data_folder](./example_data_folder)) :
 
-<!--
-```  bash
-#Input  Scheme                            #Output Scheme 
-|-- my_dataset                           |-- my_dataset_output                                   
-    participants.csv                         |-- Subject_1
-    |-- Subject_1                                |-- QC
-        |-- FatImaging_F.nii.gz                      |-- QC_[0-4].png (Quality control images)
-        |-- FatImaging_W.nii.gz                  |-- Segmentations                                                 
-    |-- Subject_2                                    |-- AAT_pred.nii.gz (Prediction Map)         
-        |-- FatImaging_F.nii.gz                      |-- AAT_variables_summary.json  (Calculated Image Biomarkers)                      
-        |-- FatImaging_W.nii.gz              ...............
-    |-- Subject_3                            |-- Subject_xx
-        |-- FatImaging_F.nii.gz                  |-- QC
-        |-- FatImaging_W.nii.gz                      |-- QC_[0-4].png (Quality control images)
-    ...........                                  |-- Segmentations    
-    |-- Subject_xx                                   |-- AAT_pred.nii.gz (Prediction Map) 
-        |-- FatImaging_F.nii.gz                      |-- AAT_variables_summary.json  (Calculated Image Biomarkers)
-        |-- FatImaging_W.nii.gz
- ``` 
- -->
  ```
  #Input  Scheme                            
 |-- my_dataset                                                             
