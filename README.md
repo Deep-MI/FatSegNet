@@ -168,7 +168,7 @@ nvidia-docker run [Options]  adipose_tool:v1  -axial -order
            |-- QC_[0-3].png (Quality control images)
         |-- Segmentations                                                 
            |-- AAT_pred.nii.gz (Only adipose tissues prediction map)
-           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes predictions maps)         
+           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes prediction map)         
            |-- AAT_variables_summary.json  (Calculated Image Biomarkers) 
     |-- Subject_2
         |-- MRI (Only created if the images are resize or sample)
@@ -178,7 +178,7 @@ nvidia-docker run [Options]  adipose_tool:v1  -axial -order
            |-- QC_[0-3].png (Quality control images)
         |-- Segmentations                                                 
            |-- AAT_pred.nii.gz (Only adipose tissues prediction map)
-           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes predictions maps)          
+           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes prediction map)          
            |-- AAT_variables_summary.json  (Calculated Image Biomarkers)                      
     ...............
     |-- Subject_xx
@@ -189,7 +189,7 @@ nvidia-docker run [Options]  adipose_tool:v1  -axial -order
            |-- QC_[0-3].png (Quality control images)
         |-- Segmentations    
            |-- AAT_pred.nii.gz (Only adipose tissues prediction map)
-           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes predictions maps)    
+           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes prediction map)    
            |-- AAT_variables_summary.json  (Calculated Image Biomarkers)
 
  ``` 
