@@ -330,7 +330,7 @@ def run_adipose_pipeline(args,flags,save_path='/',data_path='/',id='Test'):
         pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
         nib.save(pred_img, seg_path+'/'+output_pred)
 
-        pred_array[pred_array>3]=0
+        pred_array[pred_array>=3]=0
         pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
         nib.save(pred_img, seg_path+'/'+output_pred_fat)
 
