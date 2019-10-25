@@ -3,21 +3,14 @@
 
 This repository contains the tool  designed for the [Rhineland Study](https://www.rheinland-studie.de/) 
 for segmenting visceral and subcuteneous adipose tissue on fat 
-images from a two-point Dixon sequence. As the tool was tailored for the MRI protocol used on the above-mention study;
- we can not ensure segmentation reliablity on images 
-that drastically differed from the ones use for training without fine-tunning the model.
-
+images from a two-point Dixon sequence. 
 
 If you use this tool please cite:
 
-Estrada, S., Lu, R., Conjeti, S., Orozco-Ruiz, X., Panos-Willuhn, J., Breteler, M. and Reuter, M., 2019. FatSegNet: 
-A Fully Automated Deep Learning Pipeline for Adipose Tissue Segmentation on Abdominal Dixon MRI. arXiv 
-preprint arXiv:1904.02082.
- **Submitted to Magnetic Resonance in Medicine**, https://arxiv.org/abs/1904.02082
-<!--
-Unfortunately the images use for training the pipeline can not be publicly release due to the Rhineland Study 
-security policies and medical data privacy.  
- -->
+Estrada S, Lu R, Conjeti S, et al. 
+FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI.
+Magn Reson Med. 2019;00:1–13. https:// doi.org/10.1002/mrm.28022
+
 
 ## Usage
 
@@ -36,10 +29,10 @@ Prerequisites:
 
  If the tool is run for the first time the FatSegNet docker image has to be created. Run the following steps
  
- 1. `sudo git-clone https://github.com/reuter-lab/Adipose_Segmentation.git`  or download .zip file 
- 2.  from the download repository directory run on the terminal: 
+ 1. Run on the terminal `sudo git-clone https://github.com/reuter-lab/FatSegNet.git`  or download .zip file from the github repository 
+ 2. From the download repository directory run on the terminal: 
 
-* `bash build_docker_cpu.sh` for CPU<br/> 
+* `bash build_docker_cpu.sh` for CPU (In case GPU is not available)<br/> 
 * `bash build_docker_gpu.sh` for GPU <br/>
 
 For checking that the FatSegNet image was created correctly type on the terminal<br/>
@@ -60,7 +53,7 @@ adipose_tool      cpu_v1    xxxxxxxx      xxxxxx      xxxx
 ## Running the tool 
 
 ### **Input Data format**
-For running the tool the input data is expected to be a nifti volume with size of [72,224,256]. Additionally 
+For running the tool the input data is expected to be a nifti volume with size of [256,224,72], if the scans have a different size they will be crop or padd to the correct size. Additionally 
 the scans have to be arrange as follows :
 
 <!--
@@ -157,10 +150,13 @@ docker run -it --rm --name fatsegnet -u $(id -u) -v ../my_dataset/:/tool/Data -v
  * `--water_image,-water`: Name of the water image (default :FatImaging_W.nii.gz)
  * `--control_images,-No_QC` : Not to plot subjects predictions for visual quality control
  * `--run_localization,-loc` : run abdominal region localization model , by default the localization model is not run
+ * `--axial,-axial` : run only axial segmentation model
+ * `--order,-order` : Interpolation order (0=nearest,1=linear(default),2=quadratic,3=cubic), the tool will standarided the resolution to [2,2,5].<br> 
+ If the axial flag is selected will only sample the axial plane [2,2] 
  * `--compartments,-comp` : Number of equal compartments to calculate the image biomarkers, by default the whole region(wb) is calculated
  * `--increase_threshold,-AAT` : Warning flag for an increase in AAT over threhold between consecutive scans (default=0.4)
  * `--sat_to_vat_threshold,-ratio`: Warning flag for a high vat to sat ratio (default=2.0)
- * `--runs_stats,-stats` : the AAT segmentations model are not deploy only image biomarkers are calculated,fat image and VAT and SAT segmentation map required 
+ * `--runs_stats,-stats` : the AAT segmentations model are not deploy only image biomarkers are calculated,a fat scan and VAT and SAT segmentation map required (AAT_pred.nii.gz)
  * `--gpu_id, -gpu_id` :  GPU device ID, the container will only use the specified Gpu  (default `device ID 0`). ***Note*** the script organize the GPU IDs by pci bus IDs.
  
  
@@ -186,45 +182,57 @@ nvidia-docker run [Options]  adipose_tool:v1  -loc -gpu_id 2
 #Output Scheme 
 |-- my_dataset_output                                   
     |-- Subject_1
+        |-- MRI (Only created if the images are resize or sample)
+           |-- FatImaging_F.nii.gz (Fat_Scans)
+           |-- FatImaging_W.nii.gz (Water_Scans)
         |-- QC
            |-- QC_[0-3].png (Quality control images)
         |-- Segmentations                                                 
-           |-- AAT_pred.nii.gz (Prediction Map)         
+           |-- AAT_pred.nii.gz (Only adipose tissues prediction map)
+           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes predictions maps)         
            |-- AAT_variables_summary.json  (Calculated Image Biomarkers) 
     |-- Subject_2
+        |-- MRI (Only created if the images are resize or sample)
+           |-- FatImaging_F.nii.gz (Fat_Scans)
+           |-- FatImaging_W.nii.gz (Water_Scans)
         |-- QC
            |-- QC_[0-3].png (Quality control images)
         |-- Segmentations                                                 
-           |-- AAT_pred.nii.gz (Prediction Map)         
+           |-- AAT_pred.nii.gz (Only adipose tissues prediction map)
+           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes predictions maps)          
            |-- AAT_variables_summary.json  (Calculated Image Biomarkers)                      
     ...............
     |-- Subject_xx
+        |-- MRI (Only created if the images are resize or sample)
+           |-- FatImaging_F.nii.gz (Fat_Scans)
+           |-- FatImaging_W.nii.gz (Water_Scans)
         |-- QC
            |-- QC_[0-3].png (Quality control images)
         |-- Segmentations    
-           |-- AAT_pred.nii.gz (Prediction Map) 
+           |-- AAT_pred.nii.gz (Only adipose tissues prediction map)
+           |-- ALL_pred.nii.gz (adipose tissues and auxilary classes predictions maps)    
            |-- AAT_variables_summary.json  (Calculated Image Biomarkers)
 
  ``` 
 
 **Image Biomarkers**
 
-For more information on the pipeline image biomarkers reported in the `AAT_variables_summary.json ` file please check the document ....
+For more information on the pipeline image biomarkers reported in the `AAT_variables_summary.json ` file 
+please check the document [FatSegNet_Variables.pdf](./FatSegNet_Variables.pdf)
 
 **Quality Control Image Example**
 
 By default the tool creates 4 images for visually control of the input scan and predicted segmentation, as the one shown below.
 Top row fat images from axial, coronal ,sagittal view centered on the red dot; bottom row predicted segmentations 
-(blue: SAT, green : VAT, red : other tissue, and orange : Spine).    
+(blue: SAT, green : VAT).    
 
-![](Images/QC_3.png) 
+![](Images/QC_3.png)
 
 
 
 
 --------
 For any questions and feedback, feel free to contact santiago.estrada(at).dzne.de<br/>
-**Note : A implementation for fine-tunning the models will be released**<br/>
 
 --------
 

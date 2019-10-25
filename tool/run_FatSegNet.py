@@ -160,5 +160,11 @@ if __name__=='__main__':
 
     run_fatsegnet(args,FLAGS)
 
+    print('Thank you for using FatSegNet')
+    print('If you find it useful and use it for a publication, please cite: ')
+    print('Estrada S, Lu R, Conjeti S, et al. '
+          'FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI.'
+          'Magn Reson Med. 2019;00:1–13. https:// doi.org/10.1002/mrm.28022')
+
     sys.exit(0)
 
