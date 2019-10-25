@@ -9,7 +9,7 @@ If you use this tool please cite:
 
 Estrada S, Lu R, Conjeti S, et al. 
 FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI.
-Magn Reson Med. 2019;00:1–13. https:// doi.org/10.1002/mrm.28022
+Magn Reson Med. 2019;00:1–13. [https:// doi.org/10.1002/mrm.28022](https://onlinelibrary.wiley.com/doi/full/10.1002/mrm.28022)
 
 
 ## Usage
@@ -145,18 +145,17 @@ docker run -it --rm --name fatsegnet -u $(id -u) -v ../my_dataset/:/tool/Data -v
 
  #### Arguments
  * `--file,-f` : csv file containing the participants to process (default: participants.csv)
- * `--output_folder,-outp` : parent folder for the scripts outputs (see output seccion) 
+ * `--output_folder,-outp` : Parent folder for the scripts outputs (see output seccion) 
  * `--fat_image,-fat` : Name of the fat image (default :FatImaging_F.nii.gz)
  * `--water_image,-water`: Name of the water image (default :FatImaging_W.nii.gz)
  * `--control_images,-No_QC` : Not to plot subjects predictions for visual quality control
  * `--run_localization,-loc` : run abdominal region localization model , by default the localization model is not run
  * `--axial,-axial` : run only axial segmentation model
- * `--order,-order` : Interpolation order (0=nearest,1=linear(default),2=quadratic,3=cubic), the tool will standarided the resolution to [2,2,5].<br> 
- If the axial flag is selected will only sample the axial plane [2,2] 
- * `--compartments,-comp` : Number of equal compartments to calculate the image biomarkers, by default the whole region(wb) is calculated
- * `--increase_threshold,-AAT` : Warning flag for an increase in AAT over threhold between consecutive scans (default=0.4)
- * `--sat_to_vat_threshold,-ratio`: Warning flag for a high vat to sat ratio (default=2.0)
- * `--runs_stats,-stats` : the AAT segmentations model are not deploy only image biomarkers are calculated,a fat scan and VAT and SAT segmentation map required (AAT_pred.nii.gz)
+ * `--order,-order` : Interpolation order (0=nearest,1=linear(default),2=quadratic,3=cubic),the tool standardizes the input resolutions to [2mm,2mm,5mm]; if the axial flag is selected only the axial plane is sample.  
+ * `--compartments,-comp` : Number of equal compartments to calculate the statistics (default=0.0)
+ * `--increase_threshold,-AAT` : Warning flag for an increase in AAT over the define threhold between consecutive scans (default=0.4)
+ * `--sat_to_vat_threshold,-ratio`: Warning flag for a vat to sat ratio higher than the define threshold (default=2.0)
+ * `--runs_stats,-stats` : the AAT segmentations model are not deploy only image biomarkers are calculated,a fat scan and VAT and SAT segmentation map  is required (AAT_pred.nii.gz)
  * `--gpu_id, -gpu_id` :  GPU device ID, the container will only use the specified Gpu  (default `device ID 0`). ***Note*** the script organize the GPU IDs by pci bus IDs.
  
  
@@ -173,6 +172,10 @@ nvidia-docker run [Options]  adipose_tool:v1  -fat fat_image.nii.gz -water water
 
 # Select a specific GPU (ex: device ID 2)
 nvidia-docker run [Options]  adipose_tool:v1  -loc -gpu_id 2
+
+# run only the segmentation models on the axial plane and define interpolation order
+nvidia-docker run [Options]  adipose_tool:v1  -axial -order
+
 
 
 ```
