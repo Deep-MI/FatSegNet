@@ -100,7 +100,7 @@ def option_parse():
     FLAGS['input_path']='/tool/Data'
     FLAGS['output_path']='/tool/Output'
     FLAGS['imgSize'] = [256, 224, 72]
-    FLAGS['spacing'] = [1.9531, 1.9531, 5.0]
+    FLAGS['spacing'] = [float(1.9531), float(1.9531),float(5.0)]
     FLAGS['base_ornt'] = np.array([[0, -1], [1, 1], [2, 1]])
     #FLAGS['compartments']=0
     #control_images = True
@@ -144,6 +144,13 @@ def run_fatsegnet(args,FLAGS):
                         print ('Directory %s not found'%path)
                 else :
                     print('Directory name %s not found' % id)
+            print('\n')
+            print('Thank you for using FatSegNet')
+            print('If you find it useful and use it for a publication, please cite: ')
+            print('\n')
+            print('Estrada S, Lu R, Conjeti S, et al.'
+                  'FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI.'
+                  'Magn Reson Med. 2019;00:1-13. https:// doi.org/10.1002/mrm.28022')
     else:
         print('No partipant file found, please provide one the input data folder')
 
@@ -159,12 +166,6 @@ if __name__=='__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id);
 
     run_fatsegnet(args,FLAGS)
-
-    print('Thank you for using FatSegNet')
-    print('If you find it useful and use it for a publication, please cite: ')
-    print('Estrada S, Lu R, Conjeti S, et al. '
-          'FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI.'
-          'Magn Reson Med. 2019;00:1–13. https:// doi.org/10.1002/mrm.28022')
 
     sys.exit(0)
 
