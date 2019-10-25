@@ -126,9 +126,7 @@ nvidia-docker run [OPTIONS] adipose_tool:v1 [ARGUMENTS]
 A docker container doesnt have access to the system files so volumes has to be mounted. For our tool 
 is necessary to mount  the main data directory `my_dataset` to `/tool/Data` and the desire  local output
  folder to `/tool/Output`. The output folder 
-is where all pipeline output are going to be store (the input and output folder can be the same). We  
-additionally recommend to use  
-the following docker flags:<br/>
+is where all pipeline output are going to be store (the input and output folder can be the same). We additionally recommend to use the following docker flags:<br/>
  * `--rm` : Automatically clean up the container and remove the file system when the container exits
  * `--user , -u `: Username or UID (format: <name|uid>[:<group|gid>])
  * `--name` : Assign a name to the container
@@ -175,8 +173,6 @@ nvidia-docker run [Options]  adipose_tool:v1  -loc -gpu_id 2
 
 # run only the segmentation models on the axial plane and define interpolation order
 nvidia-docker run [Options]  adipose_tool:v1  -axial -order
-
-
 
 ```
 
