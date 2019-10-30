@@ -152,7 +152,7 @@ nvidia-docker run [Options]  adipose_tool:v1  -fat fat_image.nii.gz -water water
 nvidia-docker run [Options]  adipose_tool:v1  -loc -gpu_id 2
 
 # run only the segmentation models on the axial plane and define interpolation order
-nvidia-docker run [Options]  adipose_tool:v1  -axial -order
+nvidia-docker run [Options]  adipose_tool:v1  -axial -order 3
 
 ```
 
