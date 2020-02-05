@@ -126,7 +126,12 @@ def conform(img,flags,order,save_path,mod,axial=False):
     # check voxel sizer
     izoom=img.header.get_zooms()
 
-    if not np.allclose(np.array(izoom),np.array(flags['spacing']),rtol=0.3):
+    #check the spacing idx for interpolation
+    if axial:
+        idx=2
+    else:
+        idx=3
+    if not np.allclose(np.array(izoom)[:idx],np.array(flags['spacing'])[:idx],rtol=0.3):
         img_arr,i_zoom= map_image(img_arr,flags['spacing'],izoom,order,axial)
         save=True
 
