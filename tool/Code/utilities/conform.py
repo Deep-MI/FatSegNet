@@ -143,9 +143,15 @@ def conform(img,flags,order,save_path,mod,axial=False):
         save = True
 
     img_header.set_data_shape(img_arr.shape)
-    img_header.set_zooms(izoom)
+    img_header.set_zooms(i_zoom)
 
-    new_img = nib.Nifti1Image(img_arr, img.affine, img_header)
+    affine = img_header.get_qform()
+    affine[0][3] += ((flags['imgSize'][0] - ishape[0]) / 2 * i_zoom[0])
+    affine[1][3] -= ((flags['imgSize'][1] - ishape[1]) / 2 * i_zoom[1])
+    affine[2][3] -= ((flags['imgSize'][2] - ishape[2]) / 2 * i_zoom[2])
+    img_header.set_qform(affine)
+
+    new_img = nib.Nifti1Image(img_arr, affine, img_header)
     #save images if modified
 
     if save:
