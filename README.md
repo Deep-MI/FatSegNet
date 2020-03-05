@@ -7,10 +7,19 @@ images from a two-point Dixon sequence.
 
 If you use this tool please cite:
 
-Estrada S, Lu R, Conjeti S, et al. 
-FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI.
-Magn Reson Med. 2019;00:1–13. [https:// doi.org/10.1002/mrm.28022](https://onlinelibrary.wiley.com/doi/full/10.1002/mrm.28022)
-
+Estrada, Santiago, et al. "FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI." Magnetic resonance in medicine 83.4 (2020): 1471-1483. [https:// doi.org/10.1002/mrm.28022](https://onlinelibrary.wiley.com/doi/full/10.1002/mrm.28022)
+```
+@article{estrada2020fatsegnet,
+  title={FatSegNet: A fully automated deep learning pipeline for adipose tissue segmentation on abdominal dixon MRI},
+  author={Estrada, Santiago and Lu, Ran and Conjeti, Sailesh and Orozco-Ruiz, Ximena and Panos-Willuhn, Joana and Breteler, Monique MB and Reuter, Martin},
+  journal={Magnetic resonance in medicine},
+  volume={83},
+  number={4},
+  pages={1471--1483},
+  year={2020},
+  publisher={Wiley Online Library}
+}
+```
 
 ## Usage
 
@@ -53,8 +62,11 @@ adipose_tool      cpu_v1    xxxxxxxx      xxxxxx      xxxx
 ## Running the tool 
 
 ### **Input Data format**
-For running the tool the input data is expected to be a nifti volume with size of [256,224,72], if the scans have a different size they will be crop or padd to the correct size. Additionally 
-the scans have to be arrange as follows(or see [example_data_folder](./example_data_folder)) :
+For running the tool the input data is expected to be a nifti volume with size of [256,224,72], if the scans have a 
+different size they will be crop or padd to the correct size. Additionally 
+the scans have to be arrange as follows(or see [example_data_folder](./example_data_folder), **NOTE** :This folder 
+contain a ilustrative example of how images have to organized for FatSegNet to work.
+The Fat and water images scans are empty) :
 
  ```
  #Input  Scheme                            
