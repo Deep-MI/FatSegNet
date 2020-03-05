@@ -171,7 +171,7 @@ def run_adipose_pipeline(args,flags,save_path='/',data_path='/',id='Test'):
 
 
     print('-' * 30)
-    print(' Loading Subject')
+    print('Loading Subject')
     print(id)
     sub = id
 
@@ -189,162 +189,175 @@ def run_adipose_pipeline(args,flags,save_path='/',data_path='/',id='Test'):
         #Load Fat Images
         fat_img = nib.load(fat_file[0])
         ishape = fat_img.shape
-        if len(ishape) > 3 and ishape[3] != 1:
-            print('ERROR: Multiple input frames (' + format(fat_img.shape[3]) + ') not supported!')
-        else:
-            fat_img = conform(fat_img, flags=flags, order=args.order, save_path=save_path, mod='fat',
-                              axial=args.axial)
-            fat_array = fat_img.get_data()
-            fat_array = np.swapaxes(fat_array, 0, 2)
-            fat_zooms = fat_img.header.get_zooms()
 
-        print('-' * 30)
-        print('Loading Water Image')
-        #Check water image
-        if not water_file:
-            weighted=False
-            print('No water image found, weighted volumes would not be calculated')
-            water_array=np.zeros(fat_array.shape)
-        else:
-            print(water_file[0])
-            weighted=True
-            water_img = nib.load(water_file[0])
-            ishape = fat_img.shape
+        #Check if  data from example_data_folder was loaded : Only contains the value -9999
+        if len(np.unique(fat_img.get_data())) > 2:
             if len(ishape) > 3 and ishape[3] != 1:
-                print('ERROR: Multiple input frames (' + format(water_img.shape[3]) + ') not supported!')
+                print('ERROR: Multiple input frames (' + format(fat_img.shape[3]) + ') not supported!')
             else:
-                water_img = conform(water_img, flags=flags, order=args.order, save_path=save_path, mod='water',
-                                   axial=args.axial)
-                water_array = water_img.get_data()
-                water_array = np.swapaxes(water_array, 0, 2)
+                fat_img = conform(fat_img, flags=flags, order=args.order, save_path=save_path, mod='fat',
+                                  axial=args.axial)
+                fat_array = fat_img.get_data()
+                fat_array = np.swapaxes(fat_array, 0, 2)
+                fat_zooms = fat_img.header.get_zooms()
 
 
-        variable_columns, base_variable_len = stats_variable_initialization(args.compartments,weighted)
-        ratio_position = variable_columns.index('wb_VAT_VOL_TO_SAT_VOL')
+            print('-' * 30)
+            print('Loading Water Image')
+            #Check water image
+            if not water_file:
+                weighted=False
+                print('No water image found, weighted volumes would not be calculated')
+                water_array=np.zeros(fat_array.shape)
+            else:
+                print(water_file[0])
+                weighted=True
+                water_img = nib.load(water_file[0])
+                ishape = fat_img.shape
+                if len(ishape) > 3 and ishape[3] != 1:
+                    print('ERROR: Multiple input frames (' + format(water_img.shape[3]) + ') not supported!')
+                    weighted = False
+                    print('No water image found, weighted volumes would not be calculated')
+                    water_array = np.zeros(fat_array.shape)
+                else:
+                    water_img = conform(water_img, flags=flags, order=args.order, save_path=save_path, mod='water',
+                                       axial=args.axial)
+                    water_array = water_img.get_data()
+                    water_array = np.swapaxes(water_array, 0, 2)
 
-        pixel_matrix = np.zeros((1, len(variable_columns)), dtype=object)
-        row_px = 0
 
+            variable_columns, base_variable_len = stats_variable_initialization(args.compartments,weighted)
+            ratio_position = variable_columns.index('wb_VAT_VOL_TO_SAT_VOL')
 
+            pixel_matrix = np.zeros((1, len(variable_columns)), dtype=object)
+            row_px = 0
 
-        img_spacing=np.copy(fat_zooms)
+            img_spacing=np.copy(fat_zooms)
 
-        if not args.run_stats:
+            if not args.run_stats:
 
-            if args.run_localization:
-                high_idx,low_idx=run_adipose_localization(fat_array,flags)
+                if args.run_localization:
+                    high_idx,low_idx=run_adipose_localization(fat_array,flags)
+                    K.clear_session()
+                else:
+                    high_idx=fat_array.shape[0]
+                    low_idx= 0
+
+                print('the index values are %d, %d' % (low_idx, high_idx))
+
+                # Image Segmentation
+                pred_array=run_adipose_segmentation(fat_array,flags,args)
                 K.clear_session()
+
             else:
-                high_idx=fat_array.shape[0]
-                low_idx= 0
+                pred_file = locate_file('*AAT_pred.nii.gz', data_path)
 
-            print('the index values are %d, %d' % (low_idx, high_idx))
-
-            # Image Segmentation
-            pred_array=run_adipose_segmentation(fat_array,flags,args)
-            K.clear_session()
-
-        else:
-            pred_file = locate_file('*AAT_pred.nii.gz', data_path)
-
-            if pred_file :
-                pred_img = nib.load(pred_file[0])
-                pred_array = pred_img.get_data()
-                pred_array = np.swapaxes(pred_array, 0, 2)
-                pred_zooms = pred_img.header.get_zooms()
-                img_spacing = np.copy(pred_zooms)
-                # img_spacing[0] = pred_zooms[2]
-                # img_spacing[2] = pred_zooms[0]
+                if pred_file :
+                    pred_img = nib.load(pred_file[0])
+                    pred_array = pred_img.get_data()
+                    pred_array = np.swapaxes(pred_array, 0, 2)
+                    pred_zooms = pred_img.header.get_zooms()
+                    img_spacing = np.copy(pred_zooms)
+                    # img_spacing[0] = pred_zooms[2]
+                    # img_spacing[2] = pred_zooms[0]
 
 
-                high_idx, low_idx = find_labels(pred_array)
-            else :
-                print('Subject has no prediction map, a ATT_pred.nii.gz file is required to run the stats option')
-                print('-' * 30)
-                print('ERROR: Subject doesnt have a AAT_pred.nii.gz')
+                    high_idx, low_idx = find_labels(pred_array)
+                else :
+                    print('Subject has no prediction map, a ATT_pred.nii.gz file is required to run the stats option')
+                    print('-' * 30)
+                    print('ERROR: Subject doesnt have a AAT_pred.nii.gz')
 
-        print('-' * 30)
-        print('Calculating Stats')
+            print('-' * 30)
+            print('Calculating Stats')
 
-        pred_array[0:low_idx,:,:]=0
-        pred_array[high_idx:,:,:]=0
+            pred_array[0:low_idx,:,:]=0
+            pred_array[high_idx:,:,:]=0
 
-        pred_array [low_idx:high_idx, :, :] = clean_segmentations(pred_array[low_idx:high_idx, :, :])
+            pred_array [low_idx:high_idx, :, :] = clean_segmentations(pred_array[low_idx:high_idx, :, :])
 
-        pixel_matrix[row_px:row_px + 1, 0] = sub
-
-
-        pixel_matrix[row_px:row_px + 1, 3:] = calculate_statistics_v2(pred_array[low_idx:high_idx, :, :],
-                                                                      water_array[low_idx:high_idx, :, :],
-                                                                      fat_array[low_idx:high_idx, :, :],
-                                                                      low_idx, high_idx, variable_columns[3:],
-                                                                      base_variable_len, img_spacing,
-                                                                      args.compartments, weighted=weighted)
+            pixel_matrix[row_px:row_px + 1, 0] = sub
 
 
-        pixel_matrix[row_px:row_px + 1, 1] = int(high_idx-low_idx)
-        pixel_matrix[row_px:row_px + 1, 2] = check_flags(pred_array[low_idx:high_idx, :, :],water_array=water_array,fat_array=fat_array,
-                                                         ratio_vat_sat=pixel_matrix[row_px, ratio_position],
-                                                         threshold=args.increase_threshold,sat_to_vat_threshold=args.sat_to_vat_threshold)
+            pixel_matrix[row_px:row_px + 1, 3:] = calculate_statistics_v2(pred_array[low_idx:high_idx, :, :],
+                                                                          water_array[low_idx:high_idx, :, :],
+                                                                          fat_array[low_idx:high_idx, :, :],
+                                                                          low_idx, high_idx, variable_columns[3:],
+                                                                          base_variable_len, img_spacing,
+                                                                          args.compartments, weighted=weighted)
 
-        df = pd.DataFrame(pixel_matrix[row_px:row_px+1, :], columns=variable_columns)
 
-        if not os.path.isdir(os.path.join(save_path, 'Segmentations')):
-            os.mkdir(os.path.join(save_path, 'Segmentations'))
+            pixel_matrix[row_px:row_px + 1, 1] = int(high_idx-low_idx)
+            pixel_matrix[row_px:row_px + 1, 2] = check_flags(pred_array[low_idx:high_idx, :, :],water_array=water_array,fat_array=fat_array,
+                                                             ratio_vat_sat=pixel_matrix[row_px, ratio_position],
+                                                             threshold=args.increase_threshold,sat_to_vat_threshold=args.sat_to_vat_threshold)
 
-        seg_path=os.path.join(save_path, 'Segmentations')
+            df = pd.DataFrame(pixel_matrix[row_px:row_px+1, :], columns=variable_columns)
 
-        df.to_csv(seg_path+'/'+output_stats, sep='\t', index=False)
-        df.to_json(seg_path+ '/AAT_variables_summary.json', orient='records')
+            if not os.path.isdir(os.path.join(save_path, 'Segmentations')):
+                os.mkdir(os.path.join(save_path, 'Segmentations'))
 
-        row_px += 1
+            seg_path=os.path.join(save_path, 'Segmentations')
 
-        # Modified images for display
-        disp_fat = np.flipud(fat_array[:])
-        disp_fat = np.fliplr(disp_fat[:])
-        disp_pred=np.copy(pred_array)
-        disp_pred = np.flipud(disp_pred)
-        disp_pred = np.fliplr(disp_pred)
+            df.to_csv(seg_path+'/'+output_stats, sep='\t', index=False)
+            df.to_json(seg_path+ '/AAT_variables_summary.json', orient='records')
 
-        #only display SAT and VAT
-        disp_pred[disp_pred>=3]=0
+            row_px += 1
 
-        idx = (np.where(disp_pred > 0))
-        low_idx = np.min(idx[0])
-        high_idx = np.max(idx[0])
+            # Modified images for display
+            disp_fat = np.flipud(fat_array[:])
+            disp_fat = np.fliplr(disp_fat[:])
+            disp_pred=np.copy(pred_array)
+            disp_pred = np.flipud(disp_pred)
+            disp_pred = np.fliplr(disp_pred)
 
-        interval = (high_idx - low_idx) // 4
+            #only display SAT and VAT
+            disp_pred[disp_pred>=3]=0
 
-        # Control images of the segmentation
-        if not args.control_images:
-            if not os.path.isdir(os.path.join(save_path, 'QC')):
-                os.mkdir(os.path.join(save_path, 'QC'))
-            for i in range(4):
-                control_point = [0, int(np.ceil(disp_fat.shape[1] / 2)), int(np.ceil(disp_fat.shape[2] / 2))]
-                control_point[0] = int(np.ceil(np.random.uniform(high_idx - interval * i, high_idx - interval * ((i + 1)))))
-                multiview_plotting(disp_fat, disp_pred, control_point, save_path+'/QC/QC_%s.png' % i,
-                                   classes=5, alpha=0.5, nbviews=3)
+            idx = (np.where(disp_pred > 0))
+            low_idx = np.min(idx[0])
+            high_idx = np.max(idx[0])
 
-        print('-' * 30)
-        print('Saving Segmentation')
-        # Save prediction
-        pred_array=np.swapaxes(pred_array,2,0)
-        pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
-        nib.save(pred_img, seg_path+'/'+output_pred)
+            interval = (high_idx - low_idx) // 4
 
-        pred_array[pred_array>=3]=0
-        pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
-        nib.save(pred_img, seg_path+'/'+output_pred_fat)
+            # Control images of the segmentation
+            if not args.control_images:
+                if not os.path.isdir(os.path.join(save_path, 'QC')):
+                    os.mkdir(os.path.join(save_path, 'QC'))
+                for i in range(4):
+                    control_point = [0, int(np.ceil(disp_fat.shape[1] / 2)), int(np.ceil(disp_fat.shape[2] / 2))]
+                    control_point[0] = int(np.ceil(np.random.uniform(high_idx - interval * i, high_idx - interval * ((i + 1)))))
+                    multiview_plotting(disp_fat, disp_pred, control_point, save_path+'/QC/QC_%s.png' % i,
+                                       classes=5, alpha=0.5, nbviews=3)
+
+            print('-' * 30)
+            print('Saving Segmentation')
+            # Save prediction
+            pred_array=np.swapaxes(pred_array,2,0)
+            pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
+            nib.save(pred_img, seg_path+'/'+output_pred)
+
+            pred_array[pred_array>=3]=0
+            pred_img = nib.Nifti1Image(pred_array, fat_img.affine, fat_img.header)
+            nib.save(pred_img, seg_path+'/'+output_pred_fat)
+
+            print('-' * 30)
+
+            print('Finish Subject %s' % sub)
+
+            print('-' * 30)
+
+
+        else :
+            print('ERROR: Input image empty \n'
+                  'Note : Volumes from the example_data_folder are empty \n'
+                  'The example_data_folder is only a ilustrative example on how volumes have to be organized for FatSegNet to work.')
+            print('Please provided your own dixon MR scans')
 
     else:
         print('')
         print('-' * 30)
+        print('ERROR: Subject doesnt have a Fat Image named %s,\n'
+              'Please verified that the name provided to the -fat argument matches the one in the participants folder (default : FatImaging_F.nii.gz )'%str(args.fat_image))
 
-        print('ERROR: Subject doesnt have a Fat Image , Please verified input volume name')
 
-
-    print('-' * 30)
-
-    print('Finish Subject %s'%sub)
-
-    print('-' * 30)

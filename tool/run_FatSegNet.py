@@ -10,6 +10,11 @@ from Code.utilities.misc import locate_file,locate_dir
 import pandas as pd
 import numpy as np
 
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+
 
 def check_paths(save_folder,subject_id,flags):
 
@@ -114,7 +119,7 @@ def run_fatsegnet(args,FLAGS):
     # load file
     participant_file=locate_file('*'+args.file,FLAGS['input_path'])
     if participant_file:
-        print(participant_file[0])
+        print('Loading participant from file : %s'%participant_file[0])
         df =pd.read_csv(participant_file[0],header=None)
         if df.empty:
             print('Participant file empty ')
