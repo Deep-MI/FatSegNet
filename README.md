@@ -111,7 +111,7 @@ as follows :<br/>
 #For gpu
 nvidia-docker run [OPTIONS] adipose_tool:v1 [ARGUMENTS]
 #For Cpu
-nvidia-docker run [OPTIONS] adipose_tool:v1 [ARGUMENTS]
+docker run [OPTIONS] adipose_tool:v1 [ARGUMENTS]
 ```
 
 #### Options
