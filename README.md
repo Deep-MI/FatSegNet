@@ -130,7 +130,7 @@ is where all pipeline output are going to be store (the input and output folder 
 #For Gpu
 nvidia-docker run --rm --name fatsegnet -u $(id -u) -v ../my_dataset/:/tool/Data -v ../my_dataset_output/:/tool/Output  adipose_tool:v1 [Arguments]
 # For CPU
-docker run -it --rm --name fatsegnet -u $(id -u) -v ../my_dataset/:/tool/Data -v ../my_dataset_output/:/tool/Output  adipose_tool:v1 [Arguments]
+docker run -it --rm --name fatsegnet -u $(id -u) -v ../my_dataset/:/tool/Data -v ../my_dataset_output/:/tool/Output  adipose_tool:cpu_v1 [Arguments]
 ```
 
  #### Arguments
