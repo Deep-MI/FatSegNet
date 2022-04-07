@@ -38,7 +38,7 @@ Prerequisites:
 
  If the tool is run for the first time the FatSegNet docker image has to be created. Run the following steps
  
- 1. Run on the terminal `sudo git-clone https://github.com/reuter-lab/FatSegNet.git`  or download .zip file from the github repository 
+ 1. Run on the terminal `sudo git clone https://github.com/reuter-lab/FatSegNet.git`  or download .zip file from the github repository 
  2. From the download repository directory run on the terminal: 
 
 * `bash build_docker_cpu.sh` for CPU (In case GPU is not available)<br/> 
